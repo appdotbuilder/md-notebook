@@ -1,9 +1,19 @@
 
+import { db } from '../db';
+import { notesTable } from '../db/schema';
 import { type Note } from '../schema';
+import { desc } from 'drizzle-orm';
 
 export const getNotes = async (): Promise<Note[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all notes from the database.
-    // Should return notes ordered by updated_at descending (most recently updated first).
-    return [];
+  try {
+    const results = await db.select()
+      .from(notesTable)
+      .orderBy(desc(notesTable.updated_at))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Get notes failed:', error);
+    throw error;
+  }
 };

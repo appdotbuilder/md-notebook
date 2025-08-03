@@ -1,15 +1,23 @@
 
+import { db } from '../db';
+import { notesTable } from '../db/schema';
 import { type GetNoteInput, type Note } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const getNote = async (input: GetNoteInput): Promise<Note | null> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching a single note by ID from the database.
-    // Should return null if note is not found.
-    return Promise.resolve({
-        id: input.id,
-        title: 'Sample Note',
-        content: '# Sample Markdown\n\nThis is a sample note.',
-        created_at: new Date(),
-        updated_at: new Date()
-    } as Note);
+  try {
+    const result = await db.select()
+      .from(notesTable)
+      .where(eq(notesTable.id, input.id))
+      .execute();
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return result[0];
+  } catch (error) {
+    console.error('Get note failed:', error);
+    throw error;
+  }
 };
